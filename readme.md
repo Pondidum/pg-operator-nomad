@@ -45,6 +45,6 @@ flowchart TD
 
 ## Tasks
 
-- [ ] docker-compose with Postgres, Vault, Grafana (OTEL)
+- [x] docker-compose with Postgres, Vault, Grafana (OTEL)
 - [ ] shell script to create a database
 - [ ] expand script to configure vault
