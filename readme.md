@@ -8,6 +8,7 @@
 - few configuration options
 - credentials are written to vault
 - vault integration with the `database/PostgreSQL` backend
+- database per app, rather than schema per app
 
 ## Use case
 
@@ -28,9 +29,9 @@ Would cause a database to be created, and after creation configure Vault, and if
 
 ```mermaid
 flowchart TD
-	create_db --> schema_exists
-	schema_exists --yes--> done
-	schema_exists --no --> create_schema --> create_role --> configure_vault_role --> backup_enabled
+	request --> db_exists
+	db_exists --yes--> done
+	db_exists --no --> create_schema --> create_role --> configure_vault_role --> backup_enabled
 
 	backup_enabled --no --> done
 	backup_enabled --yes --> backup_exists
@@ -46,5 +47,5 @@ flowchart TD
 ## Tasks
 
 - [x] docker-compose with Postgres, Vault, Grafana (OTEL)
-- [ ] shell script to create a database
+- [x] shell script to create a database
 - [ ] expand script to configure vault

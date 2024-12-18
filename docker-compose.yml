@@ -7,9 +7,11 @@ services:
     - "4318:4318"
 
   postgres:
-    image: postgres:17.2-alpine3.21
+    image: postgres:16-alpine
     ports:
     - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
 
   vault:
     image: hashicorp/vault:1.18
