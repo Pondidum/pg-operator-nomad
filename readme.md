@@ -48,4 +48,4 @@ flowchart TD
 
 - [x] docker-compose with Postgres, Vault, Grafana (OTEL)
 - [x] shell script to create a database
-- [ ] expand script to configure vault
+- [x] expand script to configure vault
