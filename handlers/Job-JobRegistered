@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -eu
+
+
+db_enabled=$(jq -r '.Payload.Job.Meta["database.enabled"]' "$1")
+
+if [ "${db_enabled}" != "true" ]; then
+  exit 0
+fi
+
+echo "==> Database metadata detected"
+
+db_name=$(jq -r '.Payload.Job.ID' "$1" | tr '[A-Z]' '[a-z]' )
+
+echo "    db name: ${db_name}"
+
+./create-db.sh "${db_name}"
