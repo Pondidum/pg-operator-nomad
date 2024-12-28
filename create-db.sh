@@ -19,7 +19,7 @@ if psql "${connection}" --list --no-align --tuples-only | cut -d"|" -f1 | grep -
   echo "--> Database exists"
 else
   echo "--> Creating Database"
-  echo "create database :db_name;" | psql "${connection}" -v db_name="${db_name}"
+  echo "create database :db_name;" | psql "${connection}" -v "db_name=\"${db_name}\""
 fi
 
 echo "--> Configure Vault"
@@ -47,3 +47,5 @@ vault write "database/roles/${db_name}-maintainer" \
         GRANT ALL ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
   default_ttl="1h" \
   max_ttl="24h"
+
+echo "==> Done"
