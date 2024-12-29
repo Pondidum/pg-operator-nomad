@@ -21,3 +21,4 @@ services:
       VAULT_DEV_ROOT_TOKEN_ID: "vault-root"
     cap_add:
     - IPC_LOCK
+    network_mode: "host"
