@@ -2,14 +2,6 @@
 
 set -eu
 
-echo "==> Configuring Nomad ACL"
-
-export NOMAD_ADDR=http://localhost:4646
-
-# secret=$(nomad acl bootstrap -t '{{ .SecretID }}')
-# export NOMAD_TOKEN="$secret"
-
-
 echo "==> Configuring Vault"
 
 export VAULT_ADDR=http://localhost:8200
@@ -40,40 +32,3 @@ echo '{
   "token_explicit_max_ttl": 0
 }
 ' | vault write auth/jwt-nomad/role/nomad-workloads -
-
-accessor=$(vault auth list -format=json | jq -r '.["jwt-nomad/"].accessor')
-
-echo $(cat <<-EOF
-path "kv/data/{{identity.entity.aliases.${accessor}.metadata.nomad_namespace}}/{{identity.entity.aliases.${accessor}.metadata.nomad_job_id}}/*" {
-  capabilities = ["read"]
-}
-
-path "kv/data/{{identity.entity.aliases.${accessor}.metadata.nomad_namespace}}/{{identity.entity.aliases.${accessor}.metadata.nomad_job_id}}" {
-  capabilities = ["read"]
-}
-
-path "kv/metadata/{{identity.entity.aliases.${accessor}.metadata.nomad_namespace}}/*" {
-  capabilities = ["list"]
-}
-
-path "kv/metadata/*" {
-  capabilities = ["list"]
-}
-
-path "database/creds/{{ identity.entity.aliases.${accessor}.metadata.nomad_job_id }}-*" {
-  capabilities = ["read"]
-}
-EOF
-) | vault policy write 'nomad-workloads' -
-
-
-
-vault secrets enable database || true
-
-vault write database/config/pgds \
-  plugin_name="postgresql-database-plugin" \
-  allowed_roles="*" \
-  connection_url="postgresql://{{username}}:{{password}}@localhost:5432/postgres" \
-  username="postgres" \
-  password="password" \
-  password_authentication="scram-sha-256"

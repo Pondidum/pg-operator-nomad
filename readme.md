@@ -43,9 +43,17 @@ flowchart TD
 - leave backup and restore for vNext
 - create a reader, writer, deployer roles in vault
 
-
 ## Tasks
 
 - [x] docker-compose with Postgres, Vault, Grafana (OTEL)
 - [x] shell script to create a database
 - [x] expand script to configure vault
+
+## Dev
+
+1. Run `docker compose up -d`
+2. Run nomad with `nomad agent -dev-vault` to connect to the vault container
+3. Run `./configure-vault.sh` to allow nomad <-> vault communication
+4. Run `./configure-operator.sh "jwt-nomad"` to install the operator parts
+5. Run the operator `./nomad-listener --verbose`
+6. Install a job `nomad job run example.nomad`

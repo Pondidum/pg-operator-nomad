@@ -28,21 +28,21 @@ export VAULT_ADDR=http://localhost:8200
 export VAULT_TOKEN="vault-root"
 
 vault write "database/roles/${db_name}-reader" \
-  db_name="pgds" \
+  db_name="pg-operator" \
   creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
         GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
   default_ttl="1h" \
   max_ttl="24h"
 
 vault write "database/roles/${db_name}-writer" \
-  db_name="pgds" \
+  db_name="pg-operator" \
   creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
         GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE  ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
   default_ttl="1h" \
   max_ttl="24h"
 
 vault write "database/roles/${db_name}-maintainer" \
-  db_name="pgds" \
+  db_name="pg-operator" \
   creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
         GRANT ALL ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
   default_ttl="1h" \
