@@ -21,9 +21,6 @@ fi
 
 echo "--> Configure Vault"
 
-export VAULT_ADDR=http://localhost:8200
-export VAULT_TOKEN="vault-root"
-
 vault write "database/roles/${db_name}-reader" \
   db_name="pg-operator" \
   creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \

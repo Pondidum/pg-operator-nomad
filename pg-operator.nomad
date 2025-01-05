@@ -17,10 +17,14 @@ job "pg-operator" {
 
       env {
         NOMAD_ADDR = "http://localhost:4646"
+
         PGHOST = "localhost"
         PGDATABASE = "postgres"
         PGUSER = "postgres"
         PGPASSWORD = "password"
+
+        VAULT_ADDR = "http://localhost:8200"
+        VAULT_TOKEN = "vault-root"
       }
 
       template {
