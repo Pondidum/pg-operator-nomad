@@ -2,9 +2,6 @@
 
 set -eu
 
-# this will come from somewhere else later
-connection="postgresql://postgres:password@localhost:5432"
-
 db_name="${1:-""}"
 
 if [ -z "${db_name}" ]; then
@@ -15,11 +12,11 @@ fi
 echo "==> Postgres Database Service"
 echo "    Database: ${db_name}"
 
-if psql "${connection}" --list --no-align --tuples-only | cut -d"|" -f1 | grep --quiet "^${db_name}\$"; then
+if psql --list --no-align --tuples-only | cut -d"|" -f1 | grep --quiet "^${db_name}\$"; then
   echo "--> Database exists"
 else
   echo "--> Creating Database"
-  echo "create database :db_name;" | psql "${connection}" -v "db_name=\"${db_name}\""
+  echo "create database :db_name;" | psql -v "db_name=\"${db_name}\""
 fi
 
 echo "--> Configure Vault"
