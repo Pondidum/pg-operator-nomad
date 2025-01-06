@@ -34,8 +34,8 @@ print_auth_methods() {
 }
 
 validate_auth_method() {
-  auth_json="$1"
-  auth_method="$2"
+  auth_method="$1"
+  auth_json=$(vault auth list -format=json)
 
   if [ -z "${auth_method}" ]; then
     log "You must specify the Nomad auth backend (usually 'jwt-nomad')"
@@ -129,10 +129,8 @@ main() {
   verify_vault
   verify_postgres
 
-  auth_json=$(vault auth list -format=json)
   auth_method="${1:-""}"
-
-  accessor=$(validate_auth_method "${auth_json}" "${auth_method}")
+  accessor=$(validate_auth_method "${auth_method}")
 
   configure_vault_roles "${auth_method}" "${accessor}"
 
