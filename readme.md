@@ -67,7 +67,6 @@ Operator installation:
   - set `PGHOST`
   - set `PGUSER` and `PGPASSWORD`
 3. Run `./configure-operator.sh "jwt-nomad"` to install the operator parts
-4. Run the operator `nomad job run pg-operator.nomad`
 
 Testing:
 

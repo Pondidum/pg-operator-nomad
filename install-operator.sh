@@ -125,6 +125,10 @@ configure_database_backend() {
     max_ttl="24h"
 }
 
+install_operator() {
+  nomad job run -var "pghost=${PGHOST}" pg-operator.nomad
+}
+
 main() {
   verify_vault
   verify_postgres
@@ -137,6 +141,8 @@ main() {
   password=$(generate_password)
   create_postgres_role "${password}"
   configure_database_backend "${password}"
+
+  install_operator
 
   echo "==> Done"
 }
