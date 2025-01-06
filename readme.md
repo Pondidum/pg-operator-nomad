@@ -51,9 +51,24 @@ flowchart TD
 
 ## Dev
 
+
+Environment prep:
+
 1. Run `docker compose up -d`
 2. Run nomad with `nomad agent -dev-vault` to connect to the vault container
 3. Run `./configure-vault.sh` to allow nomad <-> vault communication
-4. Run `./configure-operator.sh "jwt-nomad"` to install the operator parts
-5. Run the operator `nomad job run pg-operator.nomad`
-6. Install a job `nomad job run example.nomad`
+
+
+Operator installation:
+
+1. configure Vault authentication:
+  - set `VAULT_ADDR` and either set `VAULT_TOKEN` or run `vault login`
+2. configure postgres authentication:
+  - set `PGHOST`
+  - set `PGUSER` and `PGPASSWORD`
+3. Run `./configure-operator.sh "jwt-nomad"` to install the operator parts
+4. Run the operator `nomad job run pg-operator.nomad`
+
+Testing:
+
+1. Install a job `nomad job run example.nomad`

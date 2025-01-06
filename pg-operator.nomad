@@ -1,3 +1,5 @@
+variable "pghost" { type = string }
+
 job "pg-operator" {
 
   group "operators" {
@@ -17,14 +19,23 @@ job "pg-operator" {
 
       env {
         NOMAD_ADDR = "http://localhost:4646"
-
-        PGHOST = "localhost"
+        PGHOST = var.pghost
         PGDATABASE = "postgres"
-        PGUSER = "postgres"
-        PGPASSWORD = "password"
-
         VAULT_ADDR = "http://localhost:8200"
         VAULT_TOKEN = "vault-root"
+      }
+
+      vault {}
+
+      template {
+        data = <<-EOF
+        {{ with secret "database/creds/operator" }}
+        PGUSER="{{ .Data.username }}"
+        PGPASSWORD="{{ .Data.password }}"
+        {{ end }}
+        EOF
+        destination = "secrets/pg.env"
+        env = true
       }
 
       template {
