@@ -22,7 +22,6 @@ job "pg-operator" {
         PGHOST = var.pghost
         PGDATABASE = "postgres"
         VAULT_ADDR = "http://localhost:8200"
-        VAULT_TOKEN = "vault-root"
       }
 
       vault {

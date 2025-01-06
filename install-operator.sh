@@ -62,6 +62,10 @@ configure_vault_roles() {
   path "database/creds/operator" {
     capabilities = ["read"]
   }
+
+  path "database/roles/*" {
+    capabilities = ["create", "read", "update", "patch", "delete", "list"]
+  }
 EOF
 ) | vault policy write "pg-operator" "-" > /dev/null
 
