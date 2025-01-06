@@ -25,7 +25,9 @@ job "pg-operator" {
         VAULT_TOKEN = "vault-root"
       }
 
-      vault {}
+      vault {
+        role = "pg-operator"
+      }
 
       template {
         data = <<-EOF

@@ -53,37 +53,37 @@ validate_auth_method() {
   echo "${accessor}"
 }
 
-write_nomad_job_role() {
-  policy_name="$1"
+configure_vault_roles() {
+  auth_method="$1"
   accessor="$2"
 
-  log "    Policy name: ${policy_name}"
-  log "    Writing database credentials policy"
-
+  log "    Writing pg-operator policy to Vault"
   echo $(cat <<-EOF
   path "database/creds/operator" {
     capabilities = ["read"]
   }
+EOF
+) | vault policy write "pg-operator" "-" > /dev/null
 
+  log "    Writing pg-operator-jobs policy to Vault"
+  echo $(cat <<-EOF
   path "database/creds/{{ identity.entity.aliases.${accessor}.metadata.nomad_job_id }}-*" {
     capabilities = ["read"]
   }
 EOF
-) | vault policy write "${policy_name}" "-" > /dev/null
-}
+) | vault policy write "pg-operator-jobs" "-" > /dev/null
 
-configure_nomad_default_role() {
-  policy_name="$1"
-  auth_method="$2"
+  default_role=$(vault read -field default_role "auth/${auth_method}/config")
 
-  log "    Configuring default Nomad role"
+  log "    Adding pg-operator-jobs policy to nomad default ${default_role}"
+  vault read -format=json "auth/${auth_method}/role/${default_role}" \
+    | jq '.data.token_policies += ["pg-operator-jobs"] | .data' \
+    | vault write "auth/${auth_method}/role/${default_role}" "-" > /dev/null
 
-  role=$(vault read -field default_role "auth/${auth_method}/config")
-  log "    Default role: ${role}"
-
-  vault read -format=json "auth/${auth_method}/role/${role}" \
-    | jq ".data.token_policies += [\"${policy_name}\"] | .data" \
-    | vault write "auth/${auth_method}/role/${role}" "-" > /dev/null
+  log "    Creating pg-operator role"
+  vault read -format=json "auth/${auth_method}/role/${default_role}" \
+    | jq '.data.token_policies += ["pg-operator-jobs", "pg-operator"] | .data' \
+    | vault write "auth/${auth_method}/role/pg-operator" "-" > /dev/null  
 }
 
 generate_password() {
@@ -134,11 +134,7 @@ main() {
 
   accessor=$(validate_auth_method "${auth_json}" "${auth_method}")
 
-  policy_name="pg-operator-accessor" # from flags later
-
-  write_nomad_job_role "${policy_name}" "${accessor}"
-  configure_nomad_default_role "${policy_name}" "${auth_method}"
-
+  configure_vault_roles "${auth_method}" "${accessor}"
 
   password=$(generate_password)
   create_postgres_role "${password}"
