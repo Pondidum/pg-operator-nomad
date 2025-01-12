@@ -22,6 +22,8 @@ job "pg-operator" {
         PGHOST = var.pghost
         PGDATABASE = "postgres"
         VAULT_ADDR = "http://localhost:8200"
+        OTEL_EXPORTER_OTLP_ENDPOINT = "otlp://${attr.unique.network.ip-address}:4317"
+        OTEL_EXPORTER_OTLP_INSECURE = true
       }
 
       vault {
