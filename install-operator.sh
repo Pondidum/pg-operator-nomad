@@ -142,7 +142,10 @@ configure_database_backend() {
 }
 
 install_operator() {
-  nomad job run -var "pghost=${PGHOST}" pg-operator.nomad
+  nomad job run \
+    -var "pg_host=${PGHOST}" \
+    -var "vault_addr=${VAULT_ADDR}" \
+    pg-operator.nomad
 }
 
 main() {

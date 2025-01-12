@@ -1,4 +1,5 @@
-variable "pghost" { type = string }
+variable "pg_host" { type = string }
+variable "vault_addr" { type = string }
 
 job "pg-operator" {
 
@@ -19,9 +20,9 @@ job "pg-operator" {
 
       env {
         NOMAD_ADDR = "http://localhost:4646"
-        PGHOST = var.pghost
+        PGHOST = var.pg_host
         PGDATABASE = "postgres"
-        VAULT_ADDR = "http://localhost:8200"
+        VAULT_ADDR = var.vault_addr
         OTEL_EXPORTER_OTLP_ENDPOINT = "otlp://${attr.unique.network.ip-address}:4317"
         OTEL_EXPORTER_OTLP_INSECURE = true
       }
