@@ -7,9 +7,21 @@ log() {
 }
 
 verify_vault() {
+  if [ -z "${VAULT_ADDR:-""}" ]; then
+    log "VAULT_ADDR must be set; and will be passed to the pg-operator nomad job"
+    exit 1
+  fi
+
   if ! vault token lookup 2>&1 >/dev/null; then
     log "You must be authenticated to vault to run this script."
     log "Check VAULT_ADDR and VAULT_TOKEN, or run 'vault login...'"
+    exit 1
+  fi
+}
+
+verify_nomad() {
+  if ! nomad status 2>&1 >/dev/null; then
+    log "You must be authenticated to nomad to run this script."
     exit 1
   fi
 }
@@ -30,7 +42,7 @@ verify_postgres() {
 print_auth_methods() {
   auth_json="$1"
   log "Possible values:"
-  echo "${auth_json}" | jq -r ". | keys | .[]" | tr '/' ' '
+  echo "${auth_json}" | jq -r ". | keys | .[]" | tr '/' ' ' >&2
 }
 
 validate_auth_method() {
@@ -134,8 +146,13 @@ install_operator() {
 }
 
 main() {
+  log "==> Operator installer"
+  log "--> Validating environment"
   verify_vault
   verify_postgres
+  verify_nomad
+
+  log "--> Done"
 
   auth_method="${1:-""}"
   accessor=$(validate_auth_method "${auth_method}")
