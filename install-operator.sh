@@ -113,7 +113,14 @@ generate_password() {
 create_postgres_role() {
   password="$1"
 
-  psql -c  "create role \"pg-operator\" with login password '${password}' createrole createdb;"
+  psql -c  "
+    do \$\$
+    begin
+      create role \"pg-operator\" with login password '${password}' createrole createdb;
+    exception when duplicate_object then
+      alter user \"pg-operator\" with password '${password}';
+    end
+    \$\$;"
 }
 
 configure_database_backend() {
