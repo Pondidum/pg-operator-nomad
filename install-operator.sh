@@ -12,7 +12,7 @@ verify_vault() {
     exit 1
   fi
 
-  if ! vault token lookup 2>&1 >/dev/null; then
+  if ! vault token lookup >/dev/null 2>&1; then
     log "You must be authenticated to vault to run this script."
     log "Check VAULT_ADDR and VAULT_TOKEN, or run 'vault login...'"
     exit 1
@@ -20,14 +20,14 @@ verify_vault() {
 }
 
 verify_nomad() {
-  if ! nomad status 2>&1 >/dev/null; then
+  if ! nomad status >/dev/null 2>&1; then
     log "You must be authenticated to nomad to run this script."
     exit 1
   fi
 }
 
 verify_postgres() {
-  if ! psql --list 2>&1 >/dev/null; then
+  if ! psql --list >/dev/null 2>&1; then
     log "You must be authenticated to postgres to run this script."
     log "The script will create a new postgres role and password for vault to use"
     exit 1
@@ -99,7 +99,7 @@ EOF
   log "    Creating pg-operator role"
   vault read -format=json "auth/${auth_method}/role/${default_role}" \
     | jq '.data.token_policies += ["pg-operator-jobs", "pg-operator"] | .data' \
-    | vault write "auth/${auth_method}/role/pg-operator" "-" > /dev/null  
+    | vault write "auth/${auth_method}/role/pg-operator" "-" > /dev/null
 }
 
 generate_password() {
