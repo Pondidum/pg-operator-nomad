@@ -21,15 +21,24 @@ fi
 
 echo "--> Configure Vault"
 
+vault write "database/config/${db_name}" \
+  plugin_name="postgresql-database-plugin" \
+  allowed_roles="*" \
+  connection_url="postgresql://{{username}}:{{password}}@${PGHOST}:5432/${db_name}" \
+  username="${PGUSER}" \
+  password="${PGPASSWORD}" \
+  password_authentication="scram-sha-256" > /dev/null
+
+
 vault write "database/roles/${db_name}-reader" \
-  db_name="pg-operator" \
+  db_name="${db_name}" \
   creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
         GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
   default_ttl="1h" \
   max_ttl="24h"
 
 vault write "database/roles/${db_name}-writer" \
-  db_name="pg-operator" \
+  db_name="${db_name}" \
   creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
         GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE  ON ALL TABLES IN SCHEMA public TO \"{{name}}\"; \
         GRANT SELECT, USAGE ON ALL SEQUENCES IN SCHEMA public to \"{{name}}\";" \
@@ -37,7 +46,7 @@ vault write "database/roles/${db_name}-writer" \
   max_ttl="24h"
 
 vault write "database/roles/${db_name}-maintainer" \
-  db_name="pg-operator" \
+  db_name="${db_name}" \
   creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
         GRANT ALL ON ALL TABLES IN SCHEMA public TO \"{{name}}\"; \
         GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO \"{{name}}\";" \

@@ -75,9 +75,15 @@ configure_vault_roles() {
     capabilities = ["read"]
   }
 
+  path "database/config/*" {
+    capabilities = ["read", "list", "create", "update", "patch"]
+  }
+
   path "database/roles/*" {
     capabilities = ["create", "read", "update", "patch", "delete", "list"]
   }
+
+
 EOF
 ) | vault policy write "pg-operator" "-" > /dev/null
 
@@ -143,7 +149,7 @@ configure_database_backend() {
 
   vault write "database/roles/operator" \
     db_name="pg-operator" \
-    creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' CREATEDB CREATEROLE VALID UNTIL '{{expiration}}';" \
+    creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' SUPERUSER CREATEDB CREATEROLE VALID UNTIL '{{expiration}}';" \
     default_ttl="1h" \
     max_ttl="24h"
 }
