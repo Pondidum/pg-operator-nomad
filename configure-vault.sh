@@ -4,9 +4,6 @@ set -eu
 
 echo "==> Configuring Vault"
 
-export VAULT_ADDR=http://localhost:8200
-export VAULT_TOKEN="vault-root"
-
 vault auth enable -path 'jwt-nomad' 'jwt' || true 
 
 echo '{
