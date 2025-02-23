@@ -1,0 +1,40 @@
+{
+  "ID": "pg-operator",
+  "Name": "pg-operator",
+  "TaskGroups": [
+    {
+      "Name": "operators",
+      "Tasks": [
+        {
+          "Config": {
+            "image": "localhost:5000/pgoperator:3",
+            "args": [
+              "--verbose"
+            ]
+          },
+          "Driver": "docker",
+          "Env": {
+            "VAULT_ADDR": "????????????????",
+            "OTEL_EXPORTER_OTLP_ENDPOINT": "otlp://${attr.unique.network.ip-address}:4317",
+            "OTEL_EXPORTER_OTLP_INSECURE": "true",
+            "NOMAD_ADDR": "http://localhost:4646",
+            "PGHOST": "???????????????",
+            "PGDATABASE": "postgres"
+          },
+          "Name": "listener",
+          "Templates": [
+            {
+              "ChangeMode": "restart",
+              "DestPath": "secrets/pg.env",
+              "EmbeddedTmpl": "{{ with secret \"database/creds/operator\" }}\nPGUSER=\"{{ .Data.username }}\"\nPGPASSWORD=\"{{ .Data.password }}\"\n{{ end }}\n",
+              "Envvars": true
+            }
+          ],
+          "Vault": {
+            "Role": "pg-operator"
+          }
+        }
+      ]
+    }
+  ]
+}

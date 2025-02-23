@@ -1,10 +1,10 @@
 services:
-  grafana:
-    image: grafana/otel-lgtm:latest
-    ports:
-    - "3000:3000"
-    - "4317:4317"
-    - "4318:4318"
+#  grafana:
+#    image: grafana/otel-lgtm:latest
+#    ports:
+#    - "3000:3000"
+#    - "4317:4317"
+#    - "4318:4318"
 
   postgres:
     image: postgres:16-alpine
@@ -22,3 +22,8 @@ services:
     cap_add:
     - IPC_LOCK
     network_mode: "host"
+
+  registry:
+    image: registry:2.8.3
+    ports:
+    - 5000:5000

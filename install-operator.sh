@@ -17,6 +17,8 @@ verify_vault() {
     log "Check VAULT_ADDR and VAULT_TOKEN, or run 'vault login...'"
     exit 1
   fi
+
+  log "    Vault okay"
 }
 
 verify_nomad() {
@@ -24,6 +26,8 @@ verify_nomad() {
     log "You must be authenticated to nomad to run this script."
     exit 1
   fi
+
+  log "    Nomad okay"
 }
 
 verify_postgres() {
@@ -37,6 +41,8 @@ verify_postgres() {
     log "PGHOST must be set for configuring vault."
     exit 1
   fi
+
+  log "    Postgres okay"
 }
 
 print_auth_methods() {
@@ -122,7 +128,7 @@ create_postgres_role() {
   psql -c  "
     do \$\$
     begin
-      create role \"pg-operator\" with login password '${password}' createrole createdb;
+      create role \"pg-operator\" with login password '${password}' createrole createdb superuser;
     exception when duplicate_object then
       alter user \"pg-operator\" with password '${password}';
     end
@@ -154,11 +160,18 @@ configure_database_backend() {
     max_ttl="24h"
 }
 
-install_operator() {
-  nomad job run \
-    -var "pg_host=${PGHOST}" \
-    -var "vault_addr=${VAULT_ADDR}" \
-    pg-operator.nomad
+generate_operator() {
+
+  jq \
+    --arg vault "${VAULT_ADDR}" \
+    --arg postgres "${PGHOST}" \
+    '.TaskGroups[].Tasks[].Env |= . + { VAULT_ADDR: $vault, PGHOST: $postgres}' \
+    "pg-operator.tpl.json" \
+  > "pg-operator.json"
+
+  log "    Job written to 'pg-operator.json'"
+  log "    Install by running:"
+  log "      nomad job run -json pg-operator.json"
 }
 
 main() {
@@ -179,7 +192,7 @@ main() {
   create_postgres_role "${password}"
   configure_database_backend "${password}"
 
-  install_operator
+  generate_operator
 
   echo "==> Done"
 }
