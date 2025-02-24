@@ -20,11 +20,11 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Generate Version
-      run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> "${GITHUB_ENV}"
+      run: |
+        echo "TAGS=ghcr.io/${GITHUB_REPOSITORY@L}:$(git rev-parse --short HEAD)"
 
     - uses: docker/build-push-action@v6
       with:
         context: .
         push: true
-        tags: |
-          ghcr.io/${{ github.repository_owner }}:${{ env.SHORT_SHA }}
+        tags: ${{ env.TAGS }}
