@@ -19,9 +19,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Generate Version
+    - name: Generate Tags
       run: |
-        echo "TAGS=ghcr.io/${GITHUB_REPOSITORY@L}:$(git rev-parse --short HEAD)"
+        echo "TAGS=ghcr.io/${GITHUB_REPOSITORY@L}:$(git rev-parse --short HEAD)" >> "${GITHUB_ENV}"
 
     - uses: docker/build-push-action@v6
       with:
