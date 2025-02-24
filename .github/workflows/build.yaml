@@ -1,0 +1,30 @@
+name: Build and Publish
+
+on:
+  push:
+    branches:
+    - '**'
+    tags-ignore:
+    - '**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Generate Version
+      run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> "${GITHUB_ENV}"
+
+    - uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository_owner }}:${{ env.SHORT_SHA }}
