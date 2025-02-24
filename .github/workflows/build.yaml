@@ -27,7 +27,7 @@ jobs:
         image_path="ghcr.io/${GITHUB_REPOSITORY@L}"
         
         echo "COMMIT_TAG=${image_path}:$(git rev-parse --short HEAD)" >> "${GITHUB_ENV}"
-        if [ "${{ github.ref_name }}" = "main" ]; then
+        if [ "${{ github.ref_name }}" = "gha-docker-publish" ]; then
           echo "LATEST_TAG=${image_path}:latest" >> "${GITHUB_ENV}"
         fi
 
