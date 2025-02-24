@@ -1,0 +1,46 @@
+name: Build and Publish
+
+on:
+  push:
+    branches:
+    - '**'
+    tags-ignore:
+    - '**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Generate Tags
+      run: |
+        image_path="ghcr.io/${GITHUB_REPOSITORY@L}"
+        
+        echo "COMMIT_TAG=${image_path}:$(git rev-parse --short HEAD)" >> "${GITHUB_ENV}"
+        if [ "${{ github.ref_name }}" = "main" ]; then
+          echo "LATEST_TAG=${image_path}:latest" >> "${GITHUB_ENV}"
+        fi
+
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ env.COMMIT_TAG }}
+          ${{ env.LATEST_TAG }}
