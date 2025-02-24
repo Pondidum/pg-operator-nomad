@@ -7,7 +7,7 @@
       "Tasks": [
         {
           "Config": {
-            "image": "localhost:5000/pgoperator:3",
+            "image": "ghcr.io/pondidum/pg-operator-nomad:latest",
             "network_mode": "host",
             "args": [
               "--verbose"
