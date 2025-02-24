@@ -15,12 +15,11 @@
           },
           "Driver": "docker",
           "Env": {
-            "VAULT_ADDR": "????????????????",
-            "OTEL_EXPORTER_OTLP_ENDPOINT": "otlp://${attr.unique.network.ip-address}:4317",
-            "OTEL_EXPORTER_OTLP_INSECURE": "true",
             "NOMAD_ADDR": "http://localhost:4646",
+            "VAULT_ADDR": "????????????????",
             "PGHOST": "???????????????",
-            "PGDATABASE": "postgres"
+            "PGDATABASE": "postgres",
+            "OTEL_SDK_DISABLED": "true"
           },
           "Name": "listener",
           "Templates": [

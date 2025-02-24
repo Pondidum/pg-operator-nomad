@@ -7,7 +7,7 @@ RUN wget https://releases.hashicorp.com/vault/1.18.3/vault_1.18.3_linux_amd64.zi
   mv vault /usr/local/bin/ && \
   rm vault.zip
 
-RUN wget https://github.com/Pondidum/nomad-listener/releases/download/56102de/nomad-listener -O nomad-listener && \
+RUN wget https://github.com/Pondidum/nomad-listener/releases/download/5e5cc7f/nomad-listener -O nomad-listener && \
   chmod +x nomad-listener && \
   mv nomad-listener /usr/local/bin
 
